@@ -67,7 +67,7 @@ const FlightList = () => {
         try {
           setLoading(true);
           setError(null);
-          const url = `${import.meta.env.VITE_API_BASE_URL}/search-flights?from=${from}&to=${to}&date=${date}`;
+          const url = `/api/search-flights?from=${from}&to=${to}&date=${date}`;
           console.log("Fetching flights from:", url);
           const response = await fetch(url);
           if (!response.ok) {
