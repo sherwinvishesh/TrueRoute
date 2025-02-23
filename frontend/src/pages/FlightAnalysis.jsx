@@ -76,7 +76,7 @@ const computeFlightScore = async (data) => {
   }
 
   try {
-    const backendResponse = await fetch('http://localhost:5000/compute_route_score', {
+    const backendResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/compute_route_score`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
