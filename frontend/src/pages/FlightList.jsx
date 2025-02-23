@@ -3,11 +3,56 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 
 const SERP_API_KEY = import.meta.env.VITE_SERP_API_KEY;
 
+const extractCarrierAndNumber = (flightNumber) => {
+  if (!flightNumber) return { carrier: '', number: 0 };
+  const match = flightNumber.match(/^([A-Za-z0-9]+)[\s-]*(\d+)$/);
+  if (!match) {
+    console.error('Invalid flight number format:', flightNumber);
+    return { carrier: '', number: 0 };
+  }
+  return {
+    carrier: match[1].toUpperCase(),
+    number: parseInt(match[2], 10) || 0,
+  };
+};
+
+const computeFlightScore = async (flight) => {
+  const { carrier, number } = extractCarrierAndNumber(flight.flightNumber);
+  const departureDatetime = flight.departureTime;
+  const arrivalDatetime = flight.arrivalTime;
+  const origin = flight.from;
+  const destination = flight.to;
+
+  if (!carrier || !number || !origin || !destination || !departureDatetime || !arrivalDatetime) {
+    console.error('Missing required flight data for score computation:', flight);
+    return 5.0;
+  }
+
+  try {
+    const backendResponse = await fetch('http://localhost:5000/compute_route_score', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        flight_number: number,
+        operator: carrier,
+        departure_datetime: departureDatetime,
+        arrival_datetime: arrivalDatetime,
+        origin: origin,
+        destination: destination,
+      }),
+    });
+    if (!backendResponse.ok) throw new Error('Score fetch failed');
+    const scoreData = await backendResponse.json();
+    return scoreData.true_route_score;
+  } catch (err) {
+    console.error('Error computing score for flight:', flight, err);
+    return 5.0;
+  }
+};
+
 const FlightList = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-
-  // Extract parameters from URL: e.g. ?from=ATL&to=PDX&date=2025-02-28
   const from = searchParams.get('from');
   const to = searchParams.get('to');
   const date = searchParams.get('date');
@@ -22,11 +67,8 @@ const FlightList = () => {
         try {
           setLoading(true);
           setError(null);
-
-          // Use the Vite proxy by prefixing with "/serpapi"
           const url = `/serpapi/search.json?engine=google_flights&departure_id=${from}&arrival_id=${to}&outbound_date=${date}&type=2&api_key=${SERP_API_KEY}`;
           console.log("Fetching flights from:", url);
-
           const response = await fetch(url);
           if (!response.ok) {
             const errorText = await response.text();
@@ -34,12 +76,11 @@ const FlightList = () => {
           }
           const data = await response.json();
           console.log("Full API Response:", data);
-
           if (!data || data.error) {
             throw new Error(data.error || "Invalid response from API");
           }
 
-          // Process flights: assume direct flights (use first segment)
+          // Process flights: assume direct flights (first segment)
           const processFlights = (flightsArray) =>
             flightsArray.map((option, index) => {
               const segment = option.flights[0];
@@ -57,7 +98,7 @@ const FlightList = () => {
                 duration: option.total_duration
                   ? `${Math.floor(option.total_duration / 60)}h ${option.total_duration % 60}m`
                   : "N/A",
-                bookingUrl: "https://www.google.com/flights"
+                bookingUrl: "https://www.google.com/flights",
               };
             });
 
@@ -69,7 +110,14 @@ const FlightList = () => {
             flightOptions = flightOptions.concat(processFlights(data.other_flights));
           }
 
-          setFlights(flightOptions);
+          // Compute score for each flight option
+          const scoredOptions = await Promise.all(
+            flightOptions.map(async (flight) => {
+              const score = await computeFlightScore(flight);
+              return { ...flight, true_route_score: score };
+            })
+          );
+          setFlights(scoredOptions);
         } catch (err) {
           console.error("Error fetching flights:", err);
           setError(err.message || "Failed to load flights.");
@@ -166,9 +214,13 @@ const FlightList = () => {
                   </div>
                 </div>
                 <p className="text-center text-gray-400 mt-4">{flight.duration}</p>
-                <div className="text-center mt-4">
-                  {/* Optionally, add additional info or buttons here */}
-                </div>
+                {flight.true_route_score !== undefined && (
+                  <div className="text-center mt-4">
+                    <p className="text-lg font-semibold text-blue-400">
+                      Route Score: {flight.true_route_score.toFixed(1)}
+                    </p>
+                  </div>
+                )}
               </div>
             ))}
           </div>
