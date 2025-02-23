@@ -1,16 +1,29 @@
+# database.py
 from pymongo import MongoClient
 from config import MONGODB_URI, DATABASE_NAME, COLLECTION_NAME
 
 def get_db_connection():
-    """Establish connection to MongoDB"""
+    """Establish connection to MongoDB for flights_raw collection"""
     try:
         client = MongoClient(MONGODB_URI)
         db = client[DATABASE_NAME]
         collection = db[COLLECTION_NAME]
-        print("MongoDB connection established")
+        print("MongoDB flights collection connection established")
         return collection
     except Exception as e:
-        print("Error connecting to MongoDB:", e)
+        print("Error connecting to MongoDB (flights):", e)
+        raise
+
+def get_userrev_collection():
+    """Establish connection to MongoDB for userrev collection"""
+    try:
+        client = MongoClient(MONGODB_URI)
+        db = client[DATABASE_NAME]
+        userrev_coll = db["userrev"]  # collection name for user reviews
+        print("MongoDB userrev collection connection established")
+        return userrev_coll
+    except Exception as e:
+        print("Error connecting to MongoDB (userrev):", e)
         raise
 
 def get_historical_flight_score(collection, flight_number, operator, origin, destination):
@@ -22,7 +35,7 @@ def get_historical_flight_score(collection, flight_number, operator, origin, des
         "DEST": destination
     }
     
-    print("Database query:", query)
+    print("Database query (flight_scores):", query)
     
     try:
         record = collection.find_one(query)
