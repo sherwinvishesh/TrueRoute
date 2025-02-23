@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-const AVIATION_API_KEY = import.meta.env.VITE_AVIATION_API_KEY;
+const AVIATION_API_KEY = "a07afb362de0b437af95d37dcb98bcd2";
 
 const FlightAnimation = ({ fromAirport, toAirport }) => {
   return (
