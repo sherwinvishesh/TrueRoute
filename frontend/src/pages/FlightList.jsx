@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 
-const SERP_API_KEY = import.meta.env.VITE_SERP_API_KEY;
+const SERP_API_KEY = "e90380bc7eaf9514711a3b91848045f29dd54361043276c1dbfae06771b73ac0";
 
 const extractCarrierAndNumber = (flightNumber) => {
   if (!flightNumber) return { carrier: '', number: 0 };
