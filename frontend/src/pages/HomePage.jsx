@@ -1,3 +1,4 @@
+import FlightMap from './../components/ui/USFlightAnimation';
 const HomePage = () => {
     const handleNavigation = () => {
       window.location.href = '/flights';
@@ -30,6 +31,10 @@ const HomePage = () => {
                   platforms don't give you the full picture.
                 </p>
               </div>
+
+
+              <FlightMap />
+             
   
               {/* Solution Section */}
               <div className="bg-gray-800 rounded-lg p-6 shadow-xl border border-gray-700">
