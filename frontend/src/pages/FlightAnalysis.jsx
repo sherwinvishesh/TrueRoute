@@ -109,7 +109,7 @@ const FlightAnalysis = () => {
       try {
         setLoading(true);
         const response = await fetch(
-          `http://api.aviationstack.com/v1/flights?access_key=${AVIATION_API_KEY}&flight_iata=${flightNumber}`
+          `${import.meta.env.VITE_API_BASE_URL}/flight-info/${flightNumber}`
         );
         if (!response.ok) {
           throw new Error('Failed to fetch flight data');
