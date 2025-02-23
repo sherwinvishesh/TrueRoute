@@ -11,10 +11,10 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/serpapi': {
-        target: 'https://serpapi.com',
+      '/api': {
+        target: process.env.VITE_API_BASE_URL || 'http://localhost:5000',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/serpapi/, '')
+        rewrite: (path) => path.replace(/^\/api/, '')
       }
     }
   }
