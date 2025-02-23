@@ -29,18 +29,18 @@ const computeFlightScore = async (flight) => {
   }
 
   try {
-    const backendResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/compute_route_score`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        flight_number: number,
-        operator: carrier,
-        departure_datetime: departureDatetime,
-        arrival_datetime: arrivalDatetime,
-        origin: origin,
-        destination: destination,
-      }),
-    });
+    const backendResponse = await fetch(`/api/compute_route_score`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          flight_number: number,
+          operator: carrier,
+          departure_datetime: departureDatetime,
+          arrival_datetime: arrivalDatetime,
+          origin: origin,
+          destination: destination,
+        }),
+      });
     if (!backendResponse.ok) throw new Error('Score fetch failed');
     const scoreData = await backendResponse.json();
     return scoreData.true_route_score;
