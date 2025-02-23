@@ -170,15 +170,20 @@ const airports = [
   
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (knowsFlightDetails) {
-          const flightCode = `${airline}${flightNumber}`;
-          const formattedDate = date; // date is already in YYYY-MM-DD format
-          navigate(`/flightanalysis?flight=${flightCode}&date=${formattedDate}`);
-        } else {
-          // Handle destination search
+        if (!knowsFlightDetails) {
+          // If user selected "No" (searching by route)
           navigate(`/flights?from=${fromAirport}&to=${toAirport}&date=${date}`);
+        } else {
+          // If user selected "Yes" (searching by flight number)
+          console.log("Flight Details Search:", {
+            airline,
+            flightNumber,
+            date
+          });
+          navigate(`/flightanalysis?flight=${airline}${flightNumber}&date=${date}`);
         }
       };
+    
   
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white py-12">
