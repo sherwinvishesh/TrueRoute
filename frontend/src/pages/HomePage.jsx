@@ -1,9 +1,14 @@
 import FlightMap from './../components/ui/USFlightAnimation';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+
 const HomePage = () => {
+
+    const navigate = useNavigate();
     const handleNavigation = () => {
-      window.location.href = '/flights';
+      navigate('/search'); // Navigate to search page instead of /flights
     };
-  
+
     return (
       <div className="min-h-screen w-full bg-gradient-to-b from-gray-900 to-gray-800 text-white py-12">
         <div className="container mx-auto px-4">
