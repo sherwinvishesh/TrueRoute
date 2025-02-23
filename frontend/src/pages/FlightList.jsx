@@ -29,7 +29,7 @@ const computeFlightScore = async (flight) => {
   }
 
   try {
-    const backendResponse = await fetch('http://localhost:5000/compute_route_score', {
+    const backendResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/compute_route_score`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -45,7 +45,7 @@ const computeFlightScore = async (flight) => {
     const scoreData = await backendResponse.json();
     return scoreData.true_route_score;
   } catch (err) {
-    console.error('Error computing score for flight:', flight, err);
+    console.error('Error computing score:', err);
     return 5.0;
   }
 };
