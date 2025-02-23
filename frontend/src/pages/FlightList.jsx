@@ -67,7 +67,7 @@ const FlightList = () => {
         try {
           setLoading(true);
           setError(null);
-          const url = `/serpapi/search.json?engine=google_flights&departure_id=${from}&arrival_id=${to}&outbound_date=${date}&type=2&api_key=${SERP_API_KEY}`;
+          const url = `${import.meta.env.VITE_API_BASE_URL}/search-flights?from=${from}&to=${to}&date=${date}`;
           console.log("Fetching flights from:", url);
           const response = await fetch(url);
           if (!response.ok) {
