@@ -108,9 +108,8 @@ const FlightAnalysis = () => {
     const fetchFlightData = async () => {
       try {
         setLoading(true);
-        const response = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL}/flight-info/${flightNumber}`
-        );
+        const response = await fetch(`/api/flight-info/${flightNumber}`);
+
         if (!response.ok) {
           throw new Error('Failed to fetch flight data');
         }
